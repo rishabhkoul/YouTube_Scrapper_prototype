@@ -21,9 +21,9 @@ client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mong
 db = client.test
 
 app = Flask(__name__)
+
 @app.route("/",methods=['GET'])
 @cross_origin()
-
 def homePage():
     return render_template("index.html")
 
@@ -113,7 +113,6 @@ def to_pymongo(dataframe):
 
 @app.route('/scrapper',methods=['POST','GET'])
 @cross_origin()
-
 def index():
     if request.method == 'POST':
         try:
@@ -129,7 +128,7 @@ def index():
             logging.error(e)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run(debug=True)
 
 
