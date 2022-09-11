@@ -34,7 +34,7 @@ comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 def get_50_url(channel_url,no_of_urls):
     try:
         text = []
-        with webdriver.Chrome(driver_path) as wd:
+        with webdriver.Chrome("chromedriver.exe") as wd:
             wait = WebDriverWait(wd, 20)
             wd.get(channel_url)
             time.sleep(10)
