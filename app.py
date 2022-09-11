@@ -98,7 +98,7 @@ def get_title_link_thumbnail_comments(url):
 
         return [data,comment_df]
     except Exception as e:
-        lprint(e)
+        print(e)
 
 def to_pymongo(dataframe):
     try:
@@ -127,7 +127,7 @@ def index():
             
             return render_template('results.html',data = data)
         except Exception as e:
-            print(E)
+            print(e)
 
 
 if __name__ == "__main__":
