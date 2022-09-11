@@ -13,6 +13,17 @@ from selenium.webdriver.common.keys import Keys
 import pymongo
 from flask import Flask,render_template,request,jsonify
 from flask_cors import CORS,cross_origin
+import os
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-dev-shm-usage")
+chrome_options.add_argument("--no-sandbox")
+
+wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+
+
 
 
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
@@ -32,21 +43,20 @@ comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 def get_50_url(channel_url,no_of_urls):
     try:
         text = []
-        with webdriver.Chrome("chromedriver.exe") as wd:
-            wait = WebDriverWait(wd, 20)
-            wd.get(channel_url)
-            time.sleep(10)
+        wait = WebDriverWait(wd, 20)
+        wd.get(channel_url)
+        time.sleep(10)
 
-            for i in range(4):
-                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
-                time.sleep(4)
-            while len(text) < 51:
-                for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
-                    text.append(link.get_attribute('href'))
+        for i in range(4):
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
+            time.sleep(4)
+        while len(text) < 51:
+            for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
+                text.append(link.get_attribute('href'))
 
-            url_50 = text[1:no_of_urls+1]
-            wd.quit()
-            return url_50
+        url_50 = text[1:no_of_urls+1]
+        wd.quit()
+        return url_50
 
     except TimeoutError as e:
         print(e)
@@ -55,7 +65,6 @@ def get_50_url(channel_url,no_of_urls):
 def get_title_link_thumbnail_comments(url):
     try:
 
-        wd = webdriver.Chrome(driver_path)
         wd.get(url)
         time.sleep(5)
         wait = WebDriverWait(wd, 20)
