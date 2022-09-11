@@ -3,7 +3,6 @@ pandas
 selenium
 flask
 flask_cors
-base64
 mysql-connector-python
 pymongo
 json
