@@ -10,16 +10,12 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-import mysql.connector as connector
 import pymongo
 from flask import Flask,render_template,request,jsonify
 from flask_cors import CORS,cross_origin
 import logging
 
 logging.basicConfig(filename='scrapper.log', level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-
-mydb = connector.connect(host="localhost", user='root', password="Zenfone@2")
-cursor = mydb.cursor()
 
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
@@ -98,22 +94,6 @@ def get_title_link_thumbnail_comments(url):
         logging.info('Error occurred while getting video data')
         logging.error(e)
 
-def to_database(data):
-    # data must be a dictionary
-    try:
-        cursor.execute('create database if not exists scrapper_test')
-        cursor.execute("create table if not exists scrapper_test.video_data(title varchar(255),link varchar(255),thumbnail varchar(255),likes varchar(20),comments varchar(20))")
-
-        columns = ', '.join("`" + str(x) + "`" for x in data.keys())
-        values = ', '.join('"' + str(x) + '"' for x in data.values())
-
-        # to mysql database
-        cursor.execute("insert into scrapper_test.video_data values(%s)" % values)
-        mydb.commit()
-    except Exception as e:
-        logging.info("Error occurred while adding data to database")
-        logging.error(e)
-
 def to_pymongo(dataframe):
     try:
         database = client['youtube_scrapper']
@@ -146,7 +126,6 @@ def index():
             for n,i in enumerate(get_50_url(url,no_of_urls=4)):
                 list_of_data = get_title_link_thumbnail_comments(i)
                 data.append(list_of_data[0])
-                to_database(list_of_data[0])
                 to_pymongo(dataframe=list_of_data[1])
             logging.info(data[0])
             return render_template('results.html',data = data)
