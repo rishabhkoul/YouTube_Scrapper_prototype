@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Review Page</title>
+    <style>
+        h1,
+        h3 {
+            text-align: center;
+        }
+        td {
+            border: 1px solid black;
+            word-break: break-all;
+        }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+
+      <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+
+</head>
+
+<body>
+
+  <div class="table-users">
+   <div class="header">data</div>
+
+   <table cellspacing="0">
+      <tr>
+         <th>title</th>
+         <th>link</th>
+         <th>thumbnail</th>
+          <th>likes</th>
+          <th>comments</th>
+      </tr>
+         {% for X in data %}
+      <tr>
+          <td>{{X['title']}}</td>
+         <td>{{X['link']}}</td>
+         <td>{{X['thumbnail']}}</td>
+          <td>{{X['likes']}}</td>
+          <td>{{X['comments']}}</td>
+       {% endfor %}
+   </table>
+</div>
+
+
+
+</body>
+
+</html>
