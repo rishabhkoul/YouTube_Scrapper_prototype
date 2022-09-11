@@ -20,10 +20,14 @@ logging.basicConfig(filename='scrapper.log', level=logging.INFO, format="%(ascti
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
 
+app = Flask(__name__)
+@app.route("/",methods=['GET'])
+@cross_origin()
 
-driver_path = r"C:\Users\Lenovo\iNeuron\ImageScrapper\chromedriver.exe"
+def homePage():
+    return render_template("index.html")
 
-channel = "https://www.youtube.com/c/TheRanveerShowClips/videos"
+
 df = pd.DataFrame(columns=['title', 'link', 'thumbnail'])
 comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 
@@ -107,14 +111,6 @@ def to_pymongo(dataframe):
 
 
 
-app = Flask(__name__)
-
-@app.route("/",methods=['GET'])
-@cross_origin()
-
-def homePage():
-    return render_template("index.html")
-
 @app.route('/scrapper',methods=['POST','GET'])
 @cross_origin()
 
@@ -134,7 +130,7 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
 
 
