@@ -13,9 +13,7 @@ from selenium.webdriver.common.keys import Keys
 import pymongo
 from flask import Flask,render_template,request,jsonify
 from flask_cors import CORS,cross_origin
-import logging
 
-logging.basicConfig(filename='scrapper.log', level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
@@ -47,15 +45,11 @@ def get_50_url(channel_url,no_of_urls):
                     text.append(link.get_attribute('href'))
 
             url_50 = text[1:no_of_urls+1]
-
-            logging.info(f"Scrapper urls are {url_50}")
-            logging.info(f"No. of urls scrapped {len(url_50)}")
             wd.quit()
             return url_50
 
     except TimeoutError as e:
-        logging.info("Error occurred while getting URLs")
-        logging.error(e)
+        print(e)
 
 
 def get_title_link_thumbnail_comments(url):
@@ -81,7 +75,7 @@ def get_title_link_thumbnail_comments(url):
         likes = soup.find('yt-formatted-string', {'class': 'style-scope ytd-toggle-button-renderer style-text'}).text
         comments = soup.find('h2', id='count').text.replace('Comments', '').strip()
         data = {'title': title, 'link': link, 'thumbnail': thumbnail,'likes':likes,'comments':comments}
-        logging.info(data)
+        
 
         # to save comments in a data frame
         comment_df = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
@@ -95,8 +89,7 @@ def get_title_link_thumbnail_comments(url):
 
         return [data,comment_df]
     except Exception as e:
-        logging.info('Error occurred while getting video data')
-        logging.error(e)
+        lprint(e)
 
 def to_pymongo(dataframe):
     try:
@@ -105,9 +98,9 @@ def to_pymongo(dataframe):
         result_json = dataframe.to_json(orient='index')
         parsed = json.loads(result_json)
         collection.insert_many([parsed])
-        logging.info(parsed)
+  
     except Exception as e:
-        logging.error(e)
+        print(e)
 
 
 
@@ -122,10 +115,10 @@ def index():
                 list_of_data = get_title_link_thumbnail_comments(i)
                 data.append(list_of_data[0])
                 to_pymongo(dataframe=list_of_data[1])
-            logging.info(data[0])
+            
             return render_template('results.html',data = data)
         except Exception as e:
-            logging.error(e)
+            print(E)
 
 
 if __name__ == "__main__":
