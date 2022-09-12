@@ -133,7 +133,6 @@ def index():
             print(url)
             url_list = get_50_url(url,no_of_urls=4)
             print(url_list)
-            time.sleep(5)
             for i in url_list:
                 list_of_data = get_title_link_thumbnail_comments(i)
                 data.append(list_of_data[0])
