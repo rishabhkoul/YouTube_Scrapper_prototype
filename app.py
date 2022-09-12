@@ -58,15 +58,14 @@ def get_50_url(channel_url,no_of_urls):
 def get_title_link_thumbnail_comments(url):
     try:
         with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
-            wait = WebDriverWait(wd, 20)
-            
+            wait = WebDriverWait(wd, 15)
             wd.get(url)
-            
-            time.sleep(5)
+            print(url)
+            time.sleep(10)
             
             for i in range(5):
                 wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
-                time.sleep(5)
+                time.sleep(4)
 
             soup = bs(wd.page_source, 'lxml')
             title = soup.find("meta", itemprop='name')['content']
