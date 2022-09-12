@@ -15,11 +15,6 @@ from flask import Flask,render_template,request,jsonify
 from flask_cors import CORS,cross_origin
 import os
 
-chrome_options = webdriver.ChromeOptions()
-chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-chrome_options.add_argument("--headless")
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--no-sandbox")
 
 
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
@@ -33,6 +28,12 @@ comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 
 def get_50_url(channel_url,no_of_urls):
     try:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        
         with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
             text = []
             wait = WebDriverWait(wd, 15)
@@ -58,6 +59,12 @@ def get_50_url(channel_url,no_of_urls):
 
 def get_title_link_thumbnail_comments(url):
     try:
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--no-sandbox")
+        
         with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
             wait = WebDriverWait(wd, 15)
             wd.get(url)
