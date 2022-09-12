@@ -21,10 +21,6 @@ chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
 
-wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-
-
-
 
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
@@ -42,6 +38,7 @@ comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 
 def get_50_url(channel_url,no_of_urls):
     try:
+        wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         text = []
         wait = WebDriverWait(wd, 20)
         wd.get(channel_url)
@@ -64,7 +61,7 @@ def get_50_url(channel_url,no_of_urls):
 
 def get_title_link_thumbnail_comments(url):
     try:
-
+        wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         wd.get(url)
         time.sleep(5)
         wait = WebDriverWait(wd, 20)
