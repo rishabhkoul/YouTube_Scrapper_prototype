@@ -69,7 +69,7 @@ def get_title_link_thumbnail_comments(url):
             wait = WebDriverWait(wd, 15)
             wd.get(url)
             
-            time.sleep(10)
+            time.sleep(5)
             print(url)
 
             for i in range(5):
