@@ -49,10 +49,11 @@ def get_50_url(channel_url,no_of_urls):
 
             url_50 = text[1:no_of_urls+1]
             return url_50
-
-        except TimeoutError as e:
-            print(e)
-
+    except TimeoutError as t:
+        print(t)
+    except Exception as e:
+        print(e)
+    
 
 def get_title_link_thumbnail_comments(url):
     try:
