@@ -33,62 +33,62 @@ comment_data = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
 
 def get_50_url(channel_url,no_of_urls):
     try:
-        wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        text = []
-        wait = WebDriverWait(wd, 15)
-        wd.get(channel_url)
-        time.sleep(10)
+        with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
+            text = []
+            wait = WebDriverWait(wd, 15)
+            wd.get(channel_url)
+            time.sleep(10)
 
-        for i in range(4):
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
-            time.sleep(4)
-        
-        
-        for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
-                text.append(link.get_attribute('href'))
+            for i in range(4):
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
+                time.sleep(4)
 
-        url_50 = text[1:no_of_urls+1]
-        wd.quit()
-        return url_50
 
-    except TimeoutError as e:
-        print(e)
+            for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
+                    text.append(link.get_attribute('href'))
+
+            url_50 = text[1:no_of_urls+1]
+            return url_50
+
+        except TimeoutError as e:
+            print(e)
 
 
 def get_title_link_thumbnail_comments(url):
     try:
-        wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        wd.get(url)
-        time.sleep(5)
-        wait = WebDriverWait(wd, 20)
-        for i in range(5):
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
+        with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
+            wait = WebDriverWait(wd, 20)
+            
+            wd.get(url)
+            
             time.sleep(5)
+            
+            for i in range(5):
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
+                time.sleep(5)
 
-        soup = bs(wd.page_source, 'lxml')
-        title = soup.find("meta", itemprop='name')['content']
-        link = soup.find("meta", property="og:url")['content']
-        thumbnail = soup.find("meta", property="og:image")['content']
+            soup = bs(wd.page_source, 'lxml')
+            title = soup.find("meta", itemprop='name')['content']
+            link = soup.find("meta", property="og:url")['content']
+            thumbnail = soup.find("meta", property="og:image")['content']
 
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "yt-formatted-string")))
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, "yt-formatted-string")))
 
-        channel_name = soup.find('a', {'class': "yt-simple-endpoint style-scope yt-formatted-string"}).text
-        thumbnail_bs4 = base64.b64encode(requests.get(thumbnail).content)
-        likes = soup.find('yt-formatted-string', {'class': 'style-scope ytd-toggle-button-renderer style-text'}).text
-        comments = soup.find('h2', id='count').text.replace('Comments', '').strip()
-        data = {'title': title, 'link': link, 'thumbnail': thumbnail,'likes':likes,'comments':comments}
+            channel_name = soup.find('a', {'class': "yt-simple-endpoint style-scope yt-formatted-string"}).text
+            thumbnail_bs4 = base64.b64encode(requests.get(thumbnail).content)
+            likes = soup.find('yt-formatted-string', {'class': 'style-scope ytd-toggle-button-renderer style-text'}).text
+            comments = soup.find('h2', id='count').text.replace('Comments', '').strip()
+            data = {'title': title, 'link': link, 'thumbnail': thumbnail,'likes':likes,'comments':comments}
+
+
+            # to save comments in a data frame
+            comment_df = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
+            comments_all = [i.text.strip() for i in soup.findAll(id='content-text')]
+            comment_author = [i.text.strip() for i in soup.findAll('a', id='author-text')]
+            comment_df['author'] = comment_author
+            comment_df['comments'] = comments_all
+            comment_df['channel_name'] = channel_name
         
-
-        # to save comments in a data frame
-        comment_df = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
-        comments_all = [i.text.strip() for i in soup.findAll(id='content-text')]
-        comment_author = [i.text.strip() for i in soup.findAll('a', id='author-text')]
-        comment_df['author'] = comment_author
-        comment_df['comments'] = comments_all
-        comment_df['channel_name'] = channel_name
-        wd.quit()
-
-
         return [data,comment_df]
     except Exception as e:
         print(e)
@@ -122,6 +122,7 @@ def index():
             url = request.form['content']
             print(url)
             url_list = get_50_url(url,no_of_urls=4)
+            print(url_list)
             time.sleep(5)
             for i in url_list:
                 list_of_data = get_title_link_thumbnail_comments(i)
