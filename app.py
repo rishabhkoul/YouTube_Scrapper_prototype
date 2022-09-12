@@ -48,6 +48,7 @@ def get_50_url(channel_url,no_of_urls):
                     text.append(link.get_attribute('href'))
 
             url_50 = text[1:no_of_urls+1]
+            wd.quit()
             return url_50
     except TimeoutError as t:
         print(t)
@@ -88,7 +89,7 @@ def get_title_link_thumbnail_comments(url):
             comment_df['author'] = comment_author
             comment_df['comments'] = comments_all
             comment_df['channel_name'] = channel_name
-        
+            wd.quit()
         return [data,comment_df]
     except Exception as e:
         print(e)
