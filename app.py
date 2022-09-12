@@ -66,7 +66,7 @@ def get_title_link_thumbnail_comments(url):
         chrome_options.add_argument("--no-sandbox")
         
         with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
-            wait = WebDriverWait(wd, 15)
+            wait = WebDriverWait(wd, 30)
             wd.get(url)
             print(url)
             time.sleep(10)
