@@ -17,7 +17,7 @@ import os
 
 chrome_options = webdriver.ChromeOptions()
 chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-#chrome_options.add_argument("--headless")
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--no-sandbox")
 
@@ -25,12 +25,7 @@ chrome_options.add_argument("--no-sandbox")
 client = pymongo.MongoClient("mongodb+srv://Rishabh:Mongodb2@cluster0.lhaw5.mongodb.net/?retryWrites=true&w=majority")
 db = client.test
 
-app = Flask(__name__)
 
-@app.route("/",methods=['GET'])
-@cross_origin()
-def homePage():
-    return render_template("index.html")
 
 
 df = pd.DataFrame(columns=['title', 'link', 'thumbnail'])
@@ -40,15 +35,16 @@ def get_50_url(channel_url,no_of_urls):
     try:
         wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
         text = []
-        wait = WebDriverWait(wd, 20)
+        wait = WebDriverWait(wd, 15)
         wd.get(channel_url)
         time.sleep(10)
 
         for i in range(4):
             wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
             time.sleep(4)
-        while len(text) < 51:
-            for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
+        
+        
+        for link in wait.until(EC.presence_of_all_elements_located((By.XPATH, "//*[@id='thumbnail']"))):
                 text.append(link.get_attribute('href'))
 
         url_50 = text[1:no_of_urls+1]
@@ -108,6 +104,13 @@ def to_pymongo(dataframe):
     except Exception as e:
         print(e)
 
+        
+app = Flask(__name__)
+
+@app.route("/",methods=['GET'])
+@cross_origin()
+def homePage():
+    return render_template("index.html")
 
 
 @app.route('/scrapper',methods=['POST','GET'])
@@ -117,7 +120,10 @@ def index():
         try:
             data = []
             url = request.form['content']
-            for n,i in enumerate(get_50_url(url,no_of_urls=4)):
+            print(url)
+            url_list = get_50_url(url,no_of_urls=4)
+            time.sleep(5)
+            for i in url_list:
                 list_of_data = get_title_link_thumbnail_comments(i)
                 data.append(list_of_data[0])
                 to_pymongo(dataframe=list_of_data[1])
