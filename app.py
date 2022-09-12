@@ -65,38 +65,38 @@ def get_title_link_thumbnail_comments(url):
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--no-sandbox")
         
-        wd = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        wait = WebDriverWait(wd, 15)
-        wd.get(url)
-        print(url)
-        time.sleep(10)
+        with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
+            wait = WebDriverWait(wd, 15)
+            wd.get(url)
+            print(url)
+            time.sleep(10)
 
-        for i in range(5):
-            wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
-            time.sleep(4)
+            for i in range(5):
+                wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
+                time.sleep(4)
 
-        soup = bs(wd.page_source, 'lxml')
-        title = soup.find("meta", itemprop='name')['content']
-        link = soup.find("meta", property="og:url")['content']
-        thumbnail = soup.find("meta", property="og:image")['content']
+            soup = bs(wd.page_source, 'lxml')
+            title = soup.find("meta", itemprop='name')['content']
+            link = soup.find("meta", property="og:url")['content']
+            thumbnail = soup.find("meta", property="og:image")['content']
 
-        wait.until(EC.presence_of_element_located((By.TAG_NAME, "yt-formatted-string")))
+            wait.until(EC.presence_of_element_located((By.TAG_NAME, "yt-formatted-string")))
 
-        channel_name = soup.find('a', {'class': "yt-simple-endpoint style-scope yt-formatted-string"}).text
-        thumbnail_bs4 = base64.b64encode(requests.get(thumbnail).content)
-        likes = soup.find('yt-formatted-string', {'class': 'style-scope ytd-toggle-button-renderer style-text'}).text
-        comments = soup.find('h2', id='count').text.replace('Comments', '').strip()
-        data = {'title': title, 'link': link, 'thumbnail': thumbnail,'likes':likes,'comments':comments}
+            channel_name = soup.find('a', {'class': "yt-simple-endpoint style-scope yt-formatted-string"}).text
+            thumbnail_bs4 = base64.b64encode(requests.get(thumbnail).content)
+            likes = soup.find('yt-formatted-string', {'class': 'style-scope ytd-toggle-button-renderer style-text'}).text
+            comments = soup.find('h2', id='count').text.replace('Comments', '').strip()
+            data = {'title': title, 'link': link, 'thumbnail': thumbnail,'likes':likes,'comments':comments}
 
 
-        # to save comments in a data frame
-        comment_df = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
-        comments_all = [i.text.strip() for i in soup.findAll(id='content-text')]
-        comment_author = [i.text.strip() for i in soup.findAll('a', id='author-text')]
-        comment_df['author'] = comment_author
-        comment_df['comments'] = comments_all
-        comment_df['channel_name'] = channel_name
-        print(data)
+            # to save comments in a data frame
+            comment_df = pd.DataFrame(columns=['channel_name', 'author', 'comments'])
+            comments_all = [i.text.strip() for i in soup.findAll(id='content-text')]
+            comment_author = [i.text.strip() for i in soup.findAll('a', id='author-text')]
+            comment_df['author'] = comment_author
+            comment_df['comments'] = comments_all
+            comment_df['channel_name'] = channel_name
+            print(data)
           
         return [data,comment_df]
     except Exception as e:
