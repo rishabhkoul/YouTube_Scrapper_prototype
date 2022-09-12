@@ -38,7 +38,7 @@ def get_50_url(channel_url,no_of_urls):
             text = []
             wait = WebDriverWait(wd, 15)
             wd.get(channel_url)
-            time.sleep(10)
+            time.sleep(5)
 
             for i in range(4):
                 wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
@@ -69,7 +69,7 @@ def get_title_link_thumbnail_comments(url):
             wait = WebDriverWait(wd, 15)
             wd.get(url)
             
-            time.sleep(15)
+            time.sleep(10)
             print(url)
 
             for i in range(5):
