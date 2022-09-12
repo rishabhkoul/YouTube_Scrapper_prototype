@@ -66,10 +66,11 @@ def get_title_link_thumbnail_comments(url):
         chrome_options.add_argument("--no-sandbox")
         
         with webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options) as wd:
-            wait = WebDriverWait(wd, 30)
+            wait = WebDriverWait(wd, 15)
             wd.get(url)
+            
+            time.sleep(15)
             print(url)
-            time.sleep(10)
 
             for i in range(5):
                 wait.until(EC.presence_of_element_located((By.TAG_NAME, "body"))).send_keys(Keys.PAGE_DOWN)
